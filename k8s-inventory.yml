@@ -27,8 +27,8 @@
   tasks:
     - name: Verify connection
       ansible.builtin.command: hostname
-      register: host_out
+      register: raw_out
     
-    - name: Debug Output
+    - name: Show Output
       ansible.builtin.debug:
-        var: host_out.stdout
+        var: raw_out.stdout
