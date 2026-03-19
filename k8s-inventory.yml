@@ -6,7 +6,7 @@
     - name: Get pod info
       kubernetes.core.k8s_info:
         kind: Pod
-        namespace: apolamarasetti-dev
+        namespace: rhn-support-mtrujill-dev # apolamarasetti-dev
       register: pod_list
 
     - name: Build Dynamic Inventory
@@ -19,3 +19,14 @@
           - discovered_pods
       loop: "{{ pod_list.resources }}"
       when: item.status.phase == 'Running'
+      
+    - name: Display Found Pods Summary
+      ansible.builtin.debug:
+        msg: |
+          -------------------------------------------------------
+          DISCOVERED PODS IN: {{ pod_list.resources[0].metadata.namespace }}
+          -------------------------------------------------------
+          {% for pod in pod_list.resources %}
+          - Name: {{ pod.metadata.name | rjust(40) }} | IP: {{ pod.status.podIP }}
+          {% endfor %}
+          -------------------------------------------------------
