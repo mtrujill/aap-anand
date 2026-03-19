@@ -1,23 +1,25 @@
-- name: Discover K8s Pods
+- name: Execute command in pods without using inventory
   hosts: localhost
   connection: local
   gather_facts: false
   tasks:
-    - name: Get pod info
+    - name: Get pods
       kubernetes.core.k8s_info:
         kind: Pod
         namespace: rhn-support-mtrujill-dev
       register: pod_list
 
-    - name: Build Dynamic Inventory
-      ansible.builtin.add_host:
-        name: "{{ item.metadata.name }}"
-        ansible_host: "{{ item.status.podIP }}"
-        ansible_connection: kubernetes.core.kubectl
-        ansible_kubectl_namespace: "{{ item.metadata.namespace }}"
-        ansible_remote_tmp: "" 
-        ansible_shell_type: sh
-        groups:
-          - discovered_pods
+    - name: Run command in each pod
+      kubernetes.core.k8s_exec:
+        namespace: rhn-support-mtrujill-dev
+        pod: "{{ item.metadata.name }}"
+        command: hostname
       loop: "{{ pod_list.resources }}"
       when: item.status.phase == 'Running'
+      register: exec_results
+
+    - name: Show results
+      ansible.builtin.debug:
+        msg: "Pod {{ item.item.metadata.name }} returned: {{ item.stdout }}"
+      loop: "{{ exec_results.results }}"
+      when: item.stdout is defined
