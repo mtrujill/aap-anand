@@ -21,12 +21,13 @@
       when: item.status.phase == 'Running'
       
     - name: Display Found Pods Summary
-      ansible.builtin.debug:
-        msg: |
+      ansible.builtin.pause:
+        seconds: 1 # Brief pause so it stays in the log
+        prompt: |
           -------------------------------------------------------
           DISCOVERED PODS IN: {{ pod_list.resources[0].metadata.namespace }}
           -------------------------------------------------------
           {% for pod in pod_list.resources %}
-          - Name: {{ "%-40s" | format(pod.metadata.name) }} | IP: {{ pod.status.podIP }}
+          - Name: {{ "%-50s" | format(pod.metadata.name) }} | IP: {{ pod.status.podIP }}
           {% endfor %}
           -------------------------------------------------------
