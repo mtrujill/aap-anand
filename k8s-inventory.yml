@@ -6,7 +6,7 @@
     - name: Get pod info
       kubernetes.core.k8s_info:
         kind: Pod
-        namespace: rhn-support-mtrujill-dev
+        namespace: apolamarasetti-dev
       register: pod_list
 
     - name: Build Dynamic Inventory
