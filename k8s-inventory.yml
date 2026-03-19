@@ -1,6 +1,6 @@
 plugin: kubernetes.core.k8s
 connections:
   - namespaces:
-      - rhn-support-mtrujill-dev  # Specifically targets your namespace
+      - rhn-support-mtrujill-dev 
 host_vars:
   ansible_connection: kubernetes.core.kubectl
