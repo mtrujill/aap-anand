@@ -15,7 +15,8 @@
         ansible_host: "{{ item.status.podIP }}"
         ansible_connection: kubernetes.core.kubectl
         ansible_kubectl_namespace: "{{ item.metadata.namespace }}"
-        ansible_remote_tmp: /tmp
+        ansible_remote_tmp: "" 
+        ansible_shell_type: sh
         groups:
           - discovered_pods
       loop: "{{ pod_list.resources }}"
