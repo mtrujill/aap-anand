@@ -21,15 +21,3 @@
           - discovered_pods
       loop: "{{ pod_list.resources }}"
       when: item.status.phase == 'Running'
-
-- name: Execute on Pods
-  hosts: discovered_pods
-  gather_facts: false
-  tasks:
-    - name: Verify connection
-      ansible.builtin.command: hostname
-      register: raw_out
-    
-    - name: Show Output
-      ansible.builtin.debug:
-        var: raw_out.stdout
