@@ -27,6 +27,6 @@
           DISCOVERED PODS IN: {{ pod_list.resources[0].metadata.namespace }}
           -------------------------------------------------------
           {% for pod in pod_list.resources %}
-          - Name: {{ pod.metadata.name | rjust(40) }} | IP: {{ pod.status.podIP }}
+          - Name: {{ "%-40s" | format(pod.metadata.name) }} | IP: {{ pod.status.podIP }}
           {% endfor %}
           -------------------------------------------------------
