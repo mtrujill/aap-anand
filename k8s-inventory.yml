@@ -1,6 +1,28 @@
-plugin: kubernetes.core.k8s
-connections:
-  - namespaces:
-      - rhn-support-mtrujill-dev 
-host_vars:
-  ansible_connection: kubernetes.core.kubectl
+- name: Discover K8s Pods and add to inventory
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Get pod info from namespace
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: rhn-support-mtrujill-dev
+        # You can add label_selectors here to filter specific pods
+      register: pod_list
+
+    - name: Add pods to in-memory inventory
+      ansible.builtin.add_host:
+        name: "{{ item.metadata.name }}"
+        ansible_host: "{{ item.status.podIP }}"
+        ansible_connection: kubernetes.core.kubectl
+        ansible_kubectl_namespace: "{{ item.metadata.namespace }}"
+        groups:
+          - k8s_pods
+      loop: "{{ pod_list.resources }}"
+      when: item.status.phase == 'Running'
+
+- name: Run tasks against discovered pods
+  hosts: k8s_pods
+  gather_facts: false
+  tasks:
+    - name: Ping the pod
+      ansible.builtin.ping:
